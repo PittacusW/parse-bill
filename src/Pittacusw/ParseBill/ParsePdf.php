@@ -29,7 +29,7 @@ class ParsePdf {
                             'dpi'         => 72,
                             'defaultFont' => 'Roboto',
                            ])
-              ->loadView('layouts.bill', [
+              ->loadView('pittacusw-parse-bill::bill', [
                'xml'        => $this->object,
                'ted'        => $this->barcode,
                'type'       => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
