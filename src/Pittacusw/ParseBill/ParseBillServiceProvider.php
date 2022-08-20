@@ -34,6 +34,15 @@ class ParseBillServiceProvider extends PackageServiceProvider {
   : void {
     $package->name('pittacusw-parse-bill')
             ->hasConfigFile()
+            ->hasMigrations([
+                             'create_additional_taxes_table',
+                             'create_counties_table',
+                             'create_documents_types_table',
+                             'create_economic_activities_table',
+                             'create_reference_types_table',
+                             'create_sii_branches_table',
+                             'create_transfers_types_table'
+                            ])
             ->hasViews();
   }
 }

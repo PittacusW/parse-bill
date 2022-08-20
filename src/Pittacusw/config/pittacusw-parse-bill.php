@@ -1,6 +1,6 @@
 <?php
 return [
- 'county'=>App\Models\County::class,
- 'documents_type'=>App\Models\DocumentsType::class,
- 'additional_tax'=>App\Models\AdditionalTax::class,
+ 'county'         => \Pittacusw\ParseBill\Models\County::class,
+ 'documents_type' => \Pittacusw\ParseBill\Models\DocumentsType::class,
+ 'additional_tax' => \Pittacusw\ParseBill\Models\AdditionalTax::class,
 ];

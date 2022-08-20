@@ -2,9 +2,9 @@
 
 namespace Pittacusw\ParseBill;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use DOMDocument;
 use Milon\Barcode\DNS2D;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParsePdf {
 
@@ -33,9 +33,9 @@ class ParsePdf {
                'xml'        => $this->object,
                'ted'        => $this->barcode,
                'type'       => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
-                                            ->first(),
+                                                                            ->first(),
                'county'     => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
-                                     ->first(),
+                                                                    ->first(),
                'small_font' => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 5 : 6,
                'body_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 6 : 8,
               ]);
