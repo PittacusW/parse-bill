@@ -65,7 +65,7 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
         @if(isset($details->CdgItem->VlrCodigo)&&is_string($details->CdgItem->VlrCodigo))
           <td>{{ $details->CdgItem->VlrCodigo ?? '' }}</td>
         @endif
-        <td><span style="text-transform: uppercase">{{ $details->NmbItem  }}</span> <span class="small-font">{{ isset($details->DscItem) && !is_object($details->DscItem) ? $details->DscItem : '' }}</span></td>
+        <td><span style="text-transform: uppercase">{{ $details->NmbItem ?? ''  }}</span> <span class="small-font">{{ isset($details->DscItem) && !is_object($details->DscItem) ? $details->DscItem : '' }}</span></td>
         <td>{{ $details->QtyItem ?? 1 }} {{ isset($details->UnmdItem)&&is_string($details->UnmdItem) ? $details->UnmdItem : ''  }}</td>
         <td>@currency_format($details->MontoItem / ($details->QtyItem ?? 1))</td>
         <td>@currency_format($details->MontoItem)</td>
