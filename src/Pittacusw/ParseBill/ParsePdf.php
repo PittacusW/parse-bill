@@ -8,10 +8,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParsePdf {
 
-  public    $body_height;
-  public    $xml;
-  public    $object;
-  public    $barcode;
+  protected $body_height;
+  protected $xml;
+  protected $object;
   protected $barcode;
 
   public static function render($xml) {
