@@ -17,26 +17,15 @@ class ParsePdf {
     return with(new self)->getPdf($xml);
   }
 
-  protected function getPdf($xml) {
+  public function getPdf($xml) {
     $this->xml    = $xml;
     $this->object = ReadXml::parse($xml);
+    $this->r      = is_array($this->object->Detalle) ? count($this->object->Detalle) : 0;
     $this->getBarCode();
+    $this->calculateHeight();
 
-    return Pdf::setOptions([
-                            'dpi'         => 72,
-                            'defaultFont' => 'Roboto',
-                           ])
-              ->loadView('pittacusw-parse-bill::bill', [
-               'xml'         => $this->object,
-               'ted'         => $this->barcode,
-               'type'        => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
-                                                                             ->first(),
-               'county'      => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
-                                                                     ->first(),
-               'small_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 5 : 6,
-               'body_font'   => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 6 : 8,
-               'body_height' => $this->body_height,
-              ]);
+    return $this->getOptions()
+                ->setPaper('letter');
   }
 
   protected function getBarCode() {
@@ -52,6 +41,24 @@ class ParsePdf {
     $ted = preg_replace("#\r|\n#", '', $ted);
 
     $this->barcode = with(new DNS2D)->getBarcodePNG($ted, 'PDF417');
+  }
+
+  protected function getOptions() {
+    return Pdf::setOptions([
+                            'dpi'         => 72,
+                            'defaultFont' => 'Roboto',
+                           ])
+              ->loadView('pittacusw-parse-bill::bill', [
+               'xml'         => $this->object,
+               'ted'         => $this->barcode,
+               'type'        => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
+                                                                             ->first(),
+               'county'      => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
+                                                                     ->first(),
+               'small_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 5 : 6,
+               'body_font'   => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 6 : 8,
+               'body_height' => $this->body_height,
+              ]);
   }
 
   protected function calculateHeight() {
