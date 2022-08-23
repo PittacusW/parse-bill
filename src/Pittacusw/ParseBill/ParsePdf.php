@@ -8,12 +8,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParsePdf {
 
-  protected $bodyHeight;
-
-  protected $xml;
-
-  protected $object;
-
+  public    $body_height;
+  public    $xml;
+  public    $object;
+  public    $barcode;
   protected $barcode;
 
   public static function render($xml) {
@@ -30,14 +28,15 @@ class ParsePdf {
                             'defaultFont' => 'Roboto',
                            ])
               ->loadView('pittacusw-parse-bill::bill', [
-               'xml'        => $this->object,
-               'ted'        => $this->barcode,
-               'type'       => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
-                                                                            ->first(),
-               'county'     => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
-                                                                    ->first(),
-               'small_font' => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 5 : 6,
-               'body_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 6 : 8,
+               'xml'         => $this->object,
+               'ted'         => $this->barcode,
+               'type'        => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
+                                                                             ->first(),
+               'county'      => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
+                                                                     ->first(),
+               'small_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 5 : 6,
+               'body_font'   => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 6 : 8,
+               'body_height' => $this->body_height,
               ]);
   }
 
@@ -57,27 +56,21 @@ class ParsePdf {
   }
 
   protected function calculateHeight() {
-    $pdf = Pdf::setPaper([
-                          0,
-                          0,
-                          165,
-                          100,
-                         ])
-              ->setOptions([
-                            'dpi'         => 72,
-                            'defaultFont' => 'Lucida Sans Typewriter',
-                           ])
-              ->loadView('system.layouts.factura', [
-               'xml' => $this->object,
-               'ted' => $this->barcode,
-              ]);
-
+    $references   = isset($this->object->Referencia) && is_array($this->object->Referencia) ? count($this->object->Referencia) * 14 : 0;
+    $DscRcgGlobal = isset($this->object->DscRcgGlobal) && is_array($this->object->DscRcgGlobal) ? count($this->object->DscRcgGlobal) * 14 : 0;
+    $imp          = isset($this->object->Encabezado->Totales->ImptoReten) ? count($this->object->Encabezado->Totales->ImptoReten) * 20 : 0;
+    $pdf          = $this->getOptions()
+                         ->setPaper([
+                                     0,
+                                     0,
+                                     612,
+                                     2,
+                                    ]);
+    $pdf->stream();
     $pdf->output();
-
-    $count = $pdf->getDomPDF()
-                 ->get_canvas()
+    $count = $pdf->getCanvas()
                  ->get_page_number();
     unset($pdf);
-    $this->bodyHeight = $count * 75;
+    $this->body_height = ($this->r > 20 ? 460 : 382) - $count - $this->r - $references - $DscRcgGlobal - $imp;
   }
 }
