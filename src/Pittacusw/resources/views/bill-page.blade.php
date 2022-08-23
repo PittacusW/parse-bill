@@ -52,7 +52,7 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
 <div class="seccion ">
   <table class="tabla bordeTabla details">
     <tr>
-      @if(isset($details->CdgItem->VlrCodigo)&&is_string($details->CdgItem->VlrCodigo))
+      @if(isset($xml->Detalle[0]->CdgItem->VlrCodigo))
         <th>Sku</th>
       @endif
       <th>Desc.</th>
@@ -62,10 +62,10 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
     </tr>
     @foreach($xml->Detalle as $details)
       <tr>
-        @if(isset($details->CdgItem->VlrCodigo)&&is_string($details->CdgItem->VlrCodigo))
+        @if(isset($details->CdgItem->VlrCodigo))
           <td>{{ $details->CdgItem->VlrCodigo ?? '' }}</td>
         @endif
-        <td><span style="text-transform: uppercase">{{ $details->NmbItem ?? ''  }}</span> <span class="small-font">{{ isset($details->DscItem) && !is_object($details->DscItem) ? $details->DscItem : '' }}</span></td>
+        <td><span style="text-transform: uppercase">{{ $details->NmbItem  }}</span> <span class="small-font">{{ isset($details->DscItem) && !is_object($details->DscItem) ? $details->DscItem : '' }}</span></td>
         <td>{{ $details->QtyItem ?? 1 }} {{ isset($details->UnmdItem)&&is_string($details->UnmdItem) ? $details->UnmdItem : ''  }}</td>
         <td>@currency_format($details->MontoItem / ($details->QtyItem ?? 1))</td>
         <td>@currency_format($details->MontoItem)</td>
@@ -86,25 +86,25 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
           </table>
         @endif
       </td>
-      <td style="width: 20%"></td>
+      <td style="width: 17%"></td>
       <td rowspan="2">
         <table class="tabla bordeTabla">
           @if (isset($xml->Encabezado->Totales->MntExento))
             <tr>
               <td><strong>Exento</strong></td>
-              <td class="right"> @currency_format($xml->Encabezado->Totales->MntExento)</td>
+              <td class="right">@currency_format($xml->Encabezado->Totales->MntExento)</td>
             </tr>
           @endif
           @if (isset($xml->Encabezado->Totales->MntNeto))
             <tr>
               <td><strong>Neto</strong></td>
-              <td class="right"> @currency_format($xml->Encabezado->Totales->MntNeto)</td>
+              <td class="right">@currency_format($xml->Encabezado->Totales->MntNeto)</td>
             </tr>
           @endif
           @if (isset($xml->Encabezado->Totales->IVA))
             <tr>
               <td><strong>IVA (19%)</strong></td>
-              <td class="right"> @currency_format($xml->Encabezado->Totales->IVA)</td>
+              <td class="right">@currency_format($xml->Encabezado->Totales->IVA)</td>
             </tr>
           @endif
           @if (isset($xml->Encabezado->Totales->ImptoReten))
@@ -117,7 +117,7 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
           @endif
           <tr>
             <td><strong>Monto total</strong></td>
-            <td class="right"> @currency_format($xml->Encabezado->Totales->MntTotal)</td>
+            <td class="right">@currency_format($xml->Encabezado->Totales->MntTotal)</td>
           </tr>
         </table>
       </td>
@@ -224,7 +224,8 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
         @endif</td>
     </tr>
     <tr>
-      <td class="bottom">
+      <td class="developed">Desarrollado por <a href="https://www.touchef.cl">Touchef</a></td>
+      <td class="bottom right" colspan="2">
         @if(in_array($type->code,[33,34,52]) && $page===1)
           Original
         @elseif(in_array($type->code,[33,34])&& $page===2)

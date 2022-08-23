@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>{{ $type->name }}</title>
+    <title>{{ $type->name }} N° {{ $xml->Encabezado->IdDoc->Folio }}</title>
     <style>
         @page {
             margin-top: 0;
@@ -100,12 +100,12 @@
         }
 
         .details {
-            min-height: 400px;
+            min-height: {{ $body_height }}px;
         }
 
         .details td {
             color: rgba(0, 0, 0, 0.87);
-            border-top: thin rgba(0, 0, 0, 0.12) solid;
+            border-bottom: thin rgba(0, 0, 0, 0.12) solid;
         }
 
         .details th {
@@ -125,19 +125,29 @@
 
         .bottom {
             font-weight: bold;
+            font-size: {{ $body_font +1 }}px;
         }
 
         .page_break {
             page-break-before: always;
         }
+
+        .developed {
+            text-align: center;
+            width: 50%;
+        }
+
+        .developed a {
+            color: #000;
+        }
     </style>
   </head>
 
   <body>
-    @include('pittacusw-parse-bill::bill-page',['page'=>1])
+    @include('layouts.bill-page',['page'=>1])
     @if(in_array($type->code,[33,34,52]))
       <div class="page_break"></div>
-      @include('pittacusw-parse-bill::bill-page',['page'=>2])
+      @include('layouts.bill-page',['page'=>2])
     @endif
   </body>
 
