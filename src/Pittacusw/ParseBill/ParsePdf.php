@@ -55,8 +55,8 @@ class ParsePdf {
                                                                              ->first(),
                'county'      => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
                                                                      ->first(),
-               'small_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 5 : 6,
-               'body_font'   => is_array($this->object->Detalle) && count($this->object->Detalle) > 25 ? 6 : 8,
+               'small_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 20 ? 5 : 6,
+               'body_font'   => is_array($this->object->Detalle) && count($this->object->Detalle) > 20 ? 6 : 8,
                'body_height' => $this->body_height,
               ]);
   }
