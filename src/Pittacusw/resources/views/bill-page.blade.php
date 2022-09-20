@@ -2,8 +2,8 @@
   <table class="tabla">
     <tr>
       <td class="datos" rowspan="2">
-        <p><strong>{{ $xml->Encabezado->Emisor->RznSoc }}</strong></p>
-        <p>{{ $xml->Encabezado->Emisor->GiroEmis }}</p>
+        <p><strong>{{ $xml->Encabezado->Emisor->RznSoc ?? $xml->Encabezado->Emisor->RznSocEmisor }}</strong></p>
+        <p>{{ $xml->Encabezado->Emisor->GiroEmis ?? $xml->Encabezado->Emisor->GiroEmisor }}</p>
         <p>
         <div class="line"></div>
         </p>
