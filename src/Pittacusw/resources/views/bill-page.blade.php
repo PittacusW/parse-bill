@@ -38,7 +38,7 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
       </tr>
       <tr>
         <td><strong>Giro:</strong></td>
-        <td colspan="3">{{ $xml->Encabezado->Receptor->GiroRecep }}</td>
+        <td colspan="3">{{ $xml->Encabezado->Receptor->GiroRecep ?? '' }}</td>
       </tr>
       <tr>
         <td><strong>Dirección:</strong></td>
