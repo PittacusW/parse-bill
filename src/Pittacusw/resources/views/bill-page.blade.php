@@ -161,7 +161,15 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
               <td>minimalistik.ltda@gmail.com</td>
             </tr>
           </table>
-        @endif
+          @endif
+          @if (isset($extras->comments))
+            <table class="tabla bordeTabla">
+              <tr>
+                <td><strong>Observaciones</strong></td>
+                <td>{{ $xml->Encabezado->Receptor->Contacto }}</td>
+              </tr>
+            </table>
+          @endif
       </td>
     </tr>
     <tr>
