@@ -162,7 +162,7 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
             </tr>
           </table>
           @endif
-          @if (isset($extras->comments))
+          @if (isset($xml->Encabezado->Receptor->Contacto))
             <table class="tabla bordeTabla">
               <tr>
                 <td><strong>Observaciones</strong></td>
