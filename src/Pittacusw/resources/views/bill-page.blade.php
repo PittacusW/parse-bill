@@ -62,11 +62,11 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
     </tr>
     @foreach($xml->Detalle as $details)
       <tr>
-        @if(isset($details->CdgItem->VlrCodigo))
-          <td>{{ $details->CdgItem->VlrCodigo ?? '' }}</td>
+        @if(isset($xml->Detalle[0]->CdgItem->VlrCodigo))
+          <td>{{ isset($details->CdgItem->VlrCodigo) && is_string($details->CdgItem->VlrCodigo) ? $details->CdgItem->VlrCodigo : '' }}</td>
         @endif
-        <td><span style="text-transform: uppercase">{{ $details->NmbItem  }}</span> <span class="small-font">{{ isset($details->DscItem) && !is_object($details->DscItem) ? $details->DscItem : '' }}</span></td>
-        <td>{{ $details->QtyItem ?? 1 }} {{ isset($details->UnmdItem)&&is_string($details->UnmdItem) ? $details->UnmdItem : ''  }}</td>
+        <td><span style="text-transform: uppercase">{{ $details->NmbItem  }}</span> <span class="small-font">{{ isset($details->DscItem) && is_string($details->DscItem) ? $details->DscItem : '' }}</span></td>
+        <td>{{ $details->QtyItem ?? 1 }} {{ isset($details->UnmdItem) && is_string($details->UnmdItem) ? $details->UnmdItem : ''  }}</td>
         <td>@currency_format($details->MontoItem / ($details->QtyItem ?? 1))</td>
         <td>@currency_format($details->MontoItem)</td>
       </tr>
@@ -161,15 +161,15 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
               <td>minimalistik.ltda@gmail.com</td>
             </tr>
           </table>
-          @endif
-          @if (isset($xml->Encabezado->Receptor->Contacto) && is_string($xml->Encabezado->Receptor->Contacto))
-            <table class="tabla bordeTabla">
-              <tr>
-                <td><strong>Observaciones</strong></td>
-                <td>{{ $xml->Encabezado->Receptor->Contacto }}</td>
-              </tr>
-            </table>
-          @endif
+        @endif
+        @if (isset($xml->Encabezado->Receptor->Contacto) && is_string($xml->Encabezado->Receptor->Contacto))
+          <table class="tabla bordeTabla">
+            <tr>
+              <td><strong>Observaciones</strong></td>
+              <td>{{ $xml->Encabezado->Receptor->Contacto }}</td>
+            </tr>
+          </table>
+        @endif
       </td>
     </tr>
     <tr>

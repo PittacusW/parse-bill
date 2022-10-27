@@ -85,7 +85,7 @@ class ReadXml {
     if (file_exists($file)) {
       $file = file_get_contents($file);
     }
-    $file = simplexml_load_string($file, NULL, LIBXML_NOEMPTYTAG);
+    $file = simplexml_load_string($file, NULL, LIBXML_NOBLANKS);
     $json = json_decode(json_encode(self::prepare($file)));
 
     return isset($json->SetDTE) ? $json->SetDTE->DTE : $json;
