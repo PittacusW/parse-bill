@@ -191,7 +191,7 @@ strtoupper($county->sii_branch->name ?? '') }}</td>
       </td>
     </tr>
     <tr>
-      <td style="width: 50%;"> @if(!empty($ted) && !in_array($type->code,[777,801]))
+      <td style="width: 50%;"> @if(!empty($ted) && !in_array($type->code,[777,801]) && !empty($xml->Encabezado->IdDoc->Folio))
           <div class="seccion timbre-section">
             <p><img class="timbre" src="data:image/png;base64,{{ $ted }}" alt="barcode"/></p>
             <p>Timbre electrónico S.I.I.</p>
