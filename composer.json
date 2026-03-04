@@ -18,7 +18,7 @@
     "ext-json": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
-    "pittacusw/core": "dev-main",
+    "pittacusw/core": "^1.0",
     "barryvdh/laravel-dompdf": "*",
     "freshwork/chilean-bundle": "^2.1",
     "laravel/framework": "^9.23|^12.0",
