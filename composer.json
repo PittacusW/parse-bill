@@ -22,7 +22,7 @@
     "barryvdh/laravel-dompdf": "*",
     "freshwork/chilean-bundle": "*",
     "laravel/framework": "*",
-    "neitanod/forceutf8": "*,
+    "neitanod/forceutf8": "*",
     "spatie/laravel-package-tools": "*",
     "milon/barcode": "*",
     "spatie/array-to-xml": "*"
