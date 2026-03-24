@@ -18,14 +18,14 @@
     "ext-json": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
-    "pittacusw/core": "^1.0",
+    "pittacusw/core": "*",
     "barryvdh/laravel-dompdf": "*",
-    "freshwork/chilean-bundle": "^2.1",
-    "laravel/framework": "^9.23|^12.0",
-    "neitanod/forceutf8": "^2.0",
-    "spatie/laravel-package-tools": "^1.12",
+    "freshwork/chilean-bundle": "*",
+    "laravel/framework": "*",
+    "neitanod/forceutf8": "*,
+    "spatie/laravel-package-tools": "*",
     "milon/barcode": "*",
-    "spatie/array-to-xml": "^3.1"
+    "spatie/array-to-xml": "*"
   },
   "autoload": {
     "psr-0": {
