@@ -3,35 +3,39 @@
 namespace Pittacusw\ParseBill;
 
 use DOMDocument;
+use SimpleXMLElement;
 
 class ReadXml {
 
   public static function parse($file) {
     try {
-      $json = self::open($file)->Documento;
-    } catch (\Exception $e) {
-      return NULL;
-    }
-    if (isset($json->Detalle) && !is_array($json->Detalle)) {
-      $json->Detalle = [$json->Detalle];
-    }
-    if (isset($json->Referencia) && !is_array($json->Referencia)) {
-      $json->Referencia = [$json->Referencia];
-    }
-    if (isset($json->DscRcgGlobal) && !is_array($json->DscRcgGlobal)) {
-      $json->DscRcgGlobal = [$json->DscRcgGlobal];
-    }
-    if (isset($json->Encabezado->Totales->ImptoReten) && !is_array($json->Encabezado->Totales->ImptoReten)) {
-      $json->Encabezado->Totales->ImptoReten = [$json->Encabezado->Totales->ImptoReten];
+      $json = self::open($file);
+    } catch (\Throwable $e) {
+      return null;
     }
 
+    if (!is_object($json)) {
+      return null;
+    }
+
+    $json = $json->Documento ?? $json;
+    if (!is_object($json)) {
+      return null;
+    }
+
+    self::normalizeCollection($json, 'Detalle');
+    self::normalizeCollection($json, 'Referencia');
+    self::normalizeCollection($json, 'DscRcgGlobal');
+
+    if (isset($json->Encabezado->Totales)) {
+      self::normalizeCollection($json->Encabezado->Totales, 'ImptoReten');
+    }
     return $json;
   }
 
   public static function prepare($file) {
-    if (!preg_match('!!u', $file)) {
-      $file = utf8_encode($file);
-    }
+    $file = self::ensureUtf8(self::readContents($file));
+
     preg_match_all("#\<\!\[CDATA\[(.*?)\]\]\>#is", $file, $output);
     if (count($output[1]) > 0) {
       foreach ($output[1] as $item) {
@@ -45,63 +49,104 @@ class ReadXml {
       }
     }
 
-    return self::FixEncode($file);
+    return self::normalizeXmlEncodingDeclaration($file);
   }
 
-  public static function FixEncode($value) {
-    $pos            = 0;
-    $resultValues   = [];
-    $resultValues[] = $value;
-    $hex            = unpack('H*', $value);
-    $newvalue       = utf8_decode($value);
-    $hex2           = unpack('H*', $newvalue);
-    while ($hex[1] != $hex2[1]) {
-      $value          = $newvalue;
-      $hex            = unpack('H*', $value);
-      $newvalue       = utf8_decode($value);
-      $hex2           = unpack('H*', $newvalue);
-      $resultValues[] = $value;
-      $pos ++;
+  public static function open($file) {
+    $errors = libxml_use_internal_errors(true);
+    $xml = simplexml_load_string(self::prepare($file), SimpleXMLElement::class, LIBXML_NOBLANKS | LIBXML_NOCDATA);
+    libxml_clear_errors();
+    libxml_use_internal_errors($errors);
+
+    if ($xml === false) {
+      return null;
     }
-    if (isset($resultValues[$pos - 2])) {
-      $value = $resultValues[$pos - 2];
+
+    $json = json_decode(json_encode($xml));
+    if (!is_object($json)) {
+      return null;
+    }
+
+    return self::decodeParsedEntities(
+      $xml->getName() === 'SetDTE' ? ($json->DTE ?? null) : $json
+    );
+  }
+
+  public static function loadDomDocument($file) {
+    $dom = new DOMDocument('1.0', 'ISO-8859-1');
+    if (is_string($file) && file_exists($file)) {
+      $dom->load($file, LIBXML_NOBLANKS);
     } else {
-      $value = $resultValues[0];
+      $dom->loadXML((string) $file, LIBXML_NOBLANKS);
     }
-    preg_match_all('/&(?:[a-z]+|#x?\d+);/i', $value, $matches);
-    while (isset($matches[0][0])) {
-      if ($matches[0][0] == '&apos;') {
-        $value = str_replace('&apos;', "'", $value);
-      } else {
-        $value = html_entity_decode($value);
-      }
-      preg_match_all('/&(?:[a-z]+|#x?\d+);/i', $value, $matches);
+    $dom->preserveWhiteSpace = false;
+    $dom->formatOutput       = false;
+
+    return $dom;
+  }
+
+  public static function signature($file) {
+    $dom = self::loadDomDocument($file);
+
+    return $dom->getElementsByTagName('SignatureValue')
+               ->item(0)?->nodeValue;
+  }
+
+  protected static function normalizeCollection(object $object, string $property): void {
+    if (isset($object->{$property}) && !is_array($object->{$property})) {
+      $object->{$property} = [$object->{$property}];
+    }
+  }
+
+  protected static function readContents($file): string {
+    if (is_string($file) && file_exists($file)) {
+      return (string) file_get_contents($file);
+    }
+
+    return (string) $file;
+  }
+
+  protected static function ensureUtf8(string $value): string {
+    if (preg_match('//u', $value) === 1) {
+      return $value;
+    }
+
+    if (function_exists('mb_convert_encoding')) {
+      return mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+    }
+
+    if (function_exists('iconv')) {
+      return iconv('ISO-8859-1', 'UTF-8//IGNORE', $value) ?: $value;
     }
 
     return $value;
   }
 
-  public static function open($file) {
-    if (file_exists($file)) {
-      $file = file_get_contents($file);
-    }
-    $file = simplexml_load_string($file, NULL, LIBXML_NOBLANKS);
-    $json = json_decode(json_encode(self::prepare($file)));
-
-    return isset($json->SetDTE) ? $json->SetDTE->DTE : $json;
+  protected static function normalizeXmlEncodingDeclaration(string $value): string {
+    return preg_replace(
+      '/(<\?xml[^>]*encoding=["\'])[^"\']+(["\'][^>]*\?>)/i',
+      '$1UTF-8$2',
+      $value
+    ) ?? $value;
   }
 
-  public static function signature($file) {
-    $dom = new DOMDocument('1.0', 'ISO-8859-1');
-    if (file_exists($file)) {
-      $dom->load($file);
-    } else {
-      $dom->loadXML($file);
+  protected static function decodeParsedEntities($value) {
+    if (is_array($value)) {
+      return array_map(fn($item) => self::decodeParsedEntities($item), $value);
     }
-    $dom->preserveWhiteSpace = FALSE;
-    $dom->formatOutput       = FALSE;
 
-    return $dom->getElementsByTagName('SignatureValue')
-               ->item(0)->nodeValue;
+    if (is_object($value)) {
+      foreach ($value as $property => $propertyValue) {
+        $value->{$property} = self::decodeParsedEntities($propertyValue);
+      }
+
+      return $value;
+    }
+
+    if (is_string($value)) {
+      return html_entity_decode($value, ENT_QUOTES | ENT_XML1, 'UTF-8');
+    }
+
+    return $value;
   }
 }

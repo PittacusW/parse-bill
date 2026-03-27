@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Documento>
+  <Encabezado>
+    <IdDoc>
+      <TipoDTE>39</TipoDTE>
+      <Folio>456</Folio>
+      <FchEmis>2026-03-27</FchEmis>
+    </IdDoc>
+    <Emisor>
+      <RznSoc>Minimalistik Ltda</RznSoc>
+      <GiroEmis>Servicios de software</GiroEmis>
+      <RUTEmisor>76292477-3</RUTEmisor>
+      <DirOrigen>Av. Siempre Viva 123</DirOrigen>
+      <CmnaOrigen>Santiago</CmnaOrigen>
+    </Emisor>
+    <Totales>
+      <MntTotal>500</MntTotal>
+    </Totales>
+  </Encabezado>
+  <Detalle>
+    <NmbItem>Boleta servicio</NmbItem>
+    <QtyItem>1</QtyItem>
+    <MontoItem>500</MontoItem>
+  </Detalle>
+  <Signature>
+    <SignatureValue>boleta-signature-value</SignatureValue>
+  </Signature>
+</Documento>

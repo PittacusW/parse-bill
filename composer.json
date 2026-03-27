@@ -13,26 +13,39 @@
     }
   ],
   "require": {
-    "php": "^8.1",
+    "php": "^8.3",
     "ext-dom": "*",
     "ext-json": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
-    "pittacusw/core": "*",
-    "barryvdh/laravel-dompdf": "*",
-    "freshwork/chilean-bundle": "*",
-    "laravel/framework": "*",
-    "neitanod/forceutf8": "*",
-    "spatie/laravel-package-tools": "*",
-    "milon/barcode": "*",
-    "spatie/array-to-xml": "*"
+    "barryvdh/laravel-dompdf": "^3.1",
+    "freshwork/chilean-bundle": "^2.2",
+    "laravel/framework": "^13.2",
+    "milon/barcode": "^13.1",
+    "neitanod/forceutf8": "^2.0",
+    "pittacusw/core": "^2.0",
+    "spatie/array-to-xml": "^3.4",
+    "spatie/laravel-package-tools": "^1.93"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^11.0",
+    "phpunit/phpunit": "^11.5"
   },
   "autoload": {
     "psr-0": {
       "Pittacusw\\ParseBill": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Pittacusw\\ParseBill\\Tests\\": "tests/"
+    }
+  },
   "minimum-stability": "stable",
+  "prefer-stable": true,
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
   "config": {
     "sort-packages": true
   },

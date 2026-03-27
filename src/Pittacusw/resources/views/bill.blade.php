@@ -147,7 +147,7 @@
     @include('pittacusw-parse-bill::bill-page',['page'=>1])
     @if(in_array($type->code,[33,34,52]))
       <div class="page_break"></div>
-      @include('pittacusw-parse-bill::.bill-page',['page'=>2])
+      @include('pittacusw-parse-bill::bill-page',['page'=>2])
     @endif
   </body>
 

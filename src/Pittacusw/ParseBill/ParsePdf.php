@@ -2,16 +2,18 @@
 
 namespace Pittacusw\ParseBill;
 
-use DOMDocument;
+use Barryvdh\DomPDF\PDF as DomPdfWrapper;
 use Milon\Barcode\DNS2D;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParsePdf {
 
-  protected $body_height;
-  protected $xml;
-  protected $object;
-  protected $barcode;
+  protected ?int $body_height = null;
+  protected string $xml;
+  protected ?object $object = null;
+  protected $barcode = null;
+  protected int $detail_count = 0;
+  protected $type = null;
+  protected $county = null;
 
   public static function render($xml) {
     return with(new self)->getPdf($xml);
@@ -20,20 +22,27 @@ class ParsePdf {
   public function getPdf($xml) {
     $this->xml    = $xml;
     $this->object = ReadXml::parse($xml);
-    $this->r      = is_array($this->object->Detalle) ? count($this->object->Detalle) : 0;
+    $this->detail_count = isset($this->object->Detalle) && is_array($this->object->Detalle) ? count($this->object->Detalle) : 0;
+    $this->type   = config('pittacusw-parse-bill.documents_type')::query()
+                                                             ->where('code', $this->object->Encabezado->IdDoc->TipoDTE ?? null)
+                                                             ->first();
+    $this->county = config('pittacusw-parse-bill.county')::query()
+                                                         ->with('sii_branch')
+                                                         ->where('name', $this->object->Encabezado->Emisor->CmnaOrigen ?? null)
+                                                         ->first();
     $this->getBarCode();
     $this->calculateHeight();
 
-    return $this->getOptions()
-                ->setPaper('letter');
+    return $this->buildPdf('letter');
   }
 
-  protected function getBarCode() {
-    $dom = new DOMDocument('1.0', 'ISO-8859-1');
-    $dom->load($this->xml);
+  protected function getBarCode(): void {
+    $dom = ReadXml::loadDomDocument($this->xml);
     if (empty($dom->documentElement->getElementsByTagName('TED')
                                    ->item(0))) {
-      return $this->barcode = NULL;
+      $this->barcode = null;
+
+      return;
     }
     $ted = $dom->saveXML($dom->documentElement->getElementsByTagName('TED')
                                               ->item(0));
@@ -43,40 +52,37 @@ class ParsePdf {
     $this->barcode = with(new DNS2D)->getBarcodePNG($ted, 'PDF417');
   }
 
-  protected function getOptions() {
-    return Pdf::setOptions([
-                            'dpi'         => 72,
-                            'defaultFont' => 'Roboto',
-                           ])
-              ->loadView('pittacusw-parse-bill::bill', [
-               'xml'         => $this->object,
-               'ted'         => $this->barcode,
-               'type'        => config('pittacusw-parse-bill.documents_type')::where('code', $this->object->Encabezado->IdDoc->TipoDTE)
-                                                                             ->first(),
-               'county'      => config('pittacusw-parse-bill.county')::where('name', $this->object->Encabezado->Emisor->CmnaOrigen)
-                                                                     ->first(),
-               'small_font'  => is_array($this->object->Detalle) && count($this->object->Detalle) > 20 ? 5 : 6,
-               'body_font'   => is_array($this->object->Detalle) && count($this->object->Detalle) > 20 ? 6 : 8,
-               'body_height' => $this->body_height,
-              ]);
+  protected function buildPdf($paper): DomPdfWrapper {
+    return app('dompdf.wrapper')
+      ->setOptions([
+                    'dpi'         => 72,
+                    'defaultFont' => 'Roboto',
+                   ])
+      ->loadView('pittacusw-parse-bill::bill', [
+       'xml'         => $this->object,
+       'ted'         => $this->barcode,
+       'type'        => $this->type,
+       'county'      => $this->county,
+       'small_font'  => $this->detail_count > 20 ? 5 : 6,
+       'body_font'   => $this->detail_count > 20 ? 6 : 8,
+       'body_height' => $this->body_height,
+      ])
+      ->setPaper($paper);
   }
 
-  protected function calculateHeight() {
+  protected function calculateHeight(): void {
     $references   = isset($this->object->Referencia) && is_array($this->object->Referencia) ? count($this->object->Referencia) * 14 : 0;
     $DscRcgGlobal = isset($this->object->DscRcgGlobal) && is_array($this->object->DscRcgGlobal) ? count($this->object->DscRcgGlobal) * 14 : 0;
     $imp          = isset($this->object->Encabezado->Totales->ImptoReten) ? count($this->object->Encabezado->Totales->ImptoReten) * 20 : 0;
-    $pdf          = $this->getOptions()
-                         ->setPaper([
+    $pdf          = $this->buildPdf([
                                      0,
                                      0,
                                      612,
                                      2,
                                     ]);
-    $pdf->stream();
-    $pdf->output();
+    $pdf->render();
     $count = $pdf->getCanvas()
                  ->get_page_number();
-    unset($pdf);
-    $this->body_height = ($this->r > 20 ? 460 : 382) - $count - $this->r - $references - $DscRcgGlobal - $imp;
+    $this->body_height = ($this->detail_count > 20 ? 460 : 382) - $count - $this->detail_count - $references - $DscRcgGlobal - $imp;
   }
 }

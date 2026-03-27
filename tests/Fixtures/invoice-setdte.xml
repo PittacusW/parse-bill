@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SetDTE>
+  <DTE>
+    <Documento>
+      <Encabezado>
+        <IdDoc>
+          <TipoDTE>33</TipoDTE>
+          <Folio>123</Folio>
+          <FchEmis>2026-03-27</FchEmis>
+          <FchVenc>2026-04-05</FchVenc>
+        </IdDoc>
+        <Emisor>
+          <RznSoc>Minimalistik Ltda</RznSoc>
+          <GiroEmis>Servicios de software</GiroEmis>
+          <RUTEmisor>76292477-3</RUTEmisor>
+          <DirOrigen>Av. Siempre Viva 123</DirOrigen>
+          <CmnaOrigen>Santiago</CmnaOrigen>
+        </Emisor>
+        <Receptor>
+          <RznSocRecep>Cliente de Prueba SpA</RznSocRecep>
+          <RUTRecep>76086428-5</RUTRecep>
+          <GiroRecep>Retail</GiroRecep>
+          <DirRecep>Los Aromos 456</DirRecep>
+          <CmnaRecep>Santiago</CmnaRecep>
+          <Contacto><![CDATA[Entregar en recepcion & validar]]></Contacto>
+        </Receptor>
+        <Transporte>
+          <DirDest>Bodega Central 10</DirDest>
+          <CmnaDest>Santiago</CmnaDest>
+        </Transporte>
+        <Totales>
+          <MntNeto>1000</MntNeto>
+          <IVA>190</IVA>
+          <ImptoReten>
+            <TipoImp>271</TipoImp>
+            <TasaImp>18</TasaImp>
+            <MontoImp>18</MontoImp>
+          </ImptoReten>
+          <MntTotal>1208</MntTotal>
+        </Totales>
+      </Encabezado>
+      <Detalle>
+        <NmbItem>Servicio base</NmbItem>
+        <DscItem><![CDATA[Servicio & soporte]]></DscItem>
+        <QtyItem>1</QtyItem>
+        <MontoItem>1000</MontoItem>
+      </Detalle>
+      <Referencia>
+        <TpoDocRef>33</TpoDocRef>
+        <FolioRef>99</FolioRef>
+        <FchRef>2026-03-20</FchRef>
+        <RazonRef>Ajuste comercial</RazonRef>
+      </Referencia>
+      <DscRcgGlobal>
+        <TpoMov>D</TpoMov>
+        <GlosaDR>Descuento pronto pago</GlosaDR>
+        <ValorDR>50</ValorDR>
+      </DscRcgGlobal>
+      <TED version="1.0">
+        <DD>
+          <RE>76292477-3</RE>
+          <TD>33</TD>
+          <F>123</F>
+          <FE>2026-03-27</FE>
+          <RR>76086428-5</RR>
+          <RSR>Cliente de Prueba SpA</RSR>
+          <MNT>1208</MNT>
+          <IT1>Servicio base</IT1>
+        </DD>
+        <FRMT algoritmo="SHA1withRSA">abc123</FRMT>
+      </TED>
+      <TmstFirma>2026-03-27T14:30:00</TmstFirma>
+    </Documento>
+    <Signature>
+      <SignatureValue>invoice-signature-value</SignatureValue>
+    </Signature>
+  </DTE>
+</SetDTE>
